@@ -32,7 +32,7 @@ export const BrowserHeader = ({
           <Shield className="h-5 w-5" />
           <span className="font-semibold hidden sm:inline">Proxy</span>
         </div>
-        
+
         <NavigationControls
           canGoBack={canGoBack}
           canGoForward={canGoForward}

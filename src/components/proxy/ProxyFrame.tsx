@@ -1,29 +1,12 @@
-import { useEffect, useRef } from 'react';
-import { ProxyResponse } from '@/lib/api/proxy';
-import { Loader2, AlertCircle, Globe } from 'lucide-react';
+import { Loader2, AlertCircle, Globe } from "lucide-react";
 
 interface ProxyFrameProps {
-  content: ProxyResponse | null;
+  proxiedUrl: string | null;
   isLoading: boolean;
   error: string | null;
 }
 
-export const ProxyFrame = ({ content, isLoading, error }: ProxyFrameProps) => {
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-
-  useEffect(() => {
-    if (content?.html && iframeRef.current) {
-      const iframe = iframeRef.current;
-      const doc = iframe.contentDocument || iframe.contentWindow?.document;
-      
-      if (doc) {
-        doc.open();
-        doc.write(content.html);
-        doc.close();
-      }
-    }
-  }, [content]);
-
+export const ProxyFrame = ({ proxiedUrl, isLoading, error }: ProxyFrameProps) => {
   if (isLoading) {
     return (
       <div className="flex-1 flex items-center justify-center bg-card">
@@ -47,7 +30,7 @@ export const ProxyFrame = ({ content, isLoading, error }: ProxyFrameProps) => {
     );
   }
 
-  if (!content) {
+  if (!proxiedUrl) {
     return (
       <div className="flex-1 flex items-center justify-center bg-card">
         <div className="flex flex-col items-center gap-6 text-center px-4">
@@ -57,7 +40,7 @@ export const ProxyFrame = ({ content, isLoading, error }: ProxyFrameProps) => {
           <div>
             <h1 className="text-3xl font-bold text-foreground mb-2">Web Proxy</h1>
             <p className="text-muted-foreground max-w-md">
-              Enter a URL or search term above to start browsing securely through our proxy server.
+              Enter a URL above to start browsing through the proxy.
             </p>
           </div>
         </div>
@@ -67,10 +50,11 @@ export const ProxyFrame = ({ content, isLoading, error }: ProxyFrameProps) => {
 
   return (
     <iframe
-      ref={iframeRef}
       className="flex-1 w-full bg-background border-0"
       title="Proxied Content"
-      sandbox="allow-same-origin allow-scripts allow-forms"
+      src={proxiedUrl}
+    // NOTE: sandbox can break many sites (like YouTube). For MVP, remove sandbox.
+    // If you keep it, you'll break lots of features.
     />
   );
 };

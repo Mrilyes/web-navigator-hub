@@ -1,4 +1,0 @@
-project_id = "acemotaddvzpgbqarbsi"
-
-[functions.proxy]
-verify_jwt = false
