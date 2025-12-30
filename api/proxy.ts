@@ -7,8 +7,10 @@ import { readWithLimit } from "./_lib/limits";
 
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+
     try {
         const rawUrl = String(req.query.url ?? "");
+        console.log("[proxy] url =", rawUrl);
         if (!rawUrl) return res.status(400).json({ error: "Missing url" });
 
         if (!isSafeHttpUrl(rawUrl)) return res.status(400).json({ error: "Invalid url" });
@@ -19,6 +21,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             redirect: "follow",
             headers: buildUpstreamHeaders(req),
         });
+
+        console.log("[proxy] status =", upstream.status);
+        console.log("[proxy] content-type =", upstream.headers.get("content-type"));
 
         const contentType = upstream.headers.get("content-type") || "application/octet-stream";
 
@@ -51,6 +56,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         res.setHeader("cache-control", "public, max-age=300");
         return res.send(buf);
     } catch (err: any) {
-        return res.status(500).json({ error: "Proxy error", detail: err?.message ?? String(err) });
+        console.error("[proxy] ERROR", err);
+        return res.status(500).json({
+            error: "Proxy error",
+            detail: err?.message ?? String(err),
+        });
     }
+}
+
+export function toProxiedUrl(url: string) {
+    return `/api/proxy?url=${encodeURIComponent(url)}`;
 }
