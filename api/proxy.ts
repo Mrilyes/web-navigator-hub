@@ -1,9 +1,10 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { isSafeHttpUrl, blockPrivateTargets } from "./_lib/security";
-import { buildUpstreamHeaders, copyResponseHeaders } from "./_lib/headers";
-import { rewriteHtml } from "./_lib/rewrite-html";
-import { rewriteCss } from "./_lib/rewrite-css";
-import { readWithLimit } from "./_lib/limits";
+import { isSafeHttpUrl, blockPrivateTargets } from "./lib/security.js";
+import { buildUpstreamHeaders, copyResponseHeaders } from "./lib/headers.js";
+import { rewriteHtml } from "./lib/rewrite-html.js";
+import { rewriteCss } from "./lib/rewrite-css.js";
+import { readWithLimit } from "./lib/limits.js";
+
 
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -62,8 +63,4 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
             detail: err?.message ?? String(err),
         });
     }
-}
-
-export function toProxiedUrl(url: string) {
-    return `/api/proxy?url=${encodeURIComponent(url)}`;
 }
